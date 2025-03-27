@@ -152,7 +152,7 @@
                 addRows("Lines with value errors", fund.error_lines, ["compound_id", "raw_value", "error_notes"]);
                 addRows("Unknown compound_id", fund.unknown_lines, ["compound_id", "raw_value", "error_notes"]);
                 addRows("Strongly recommended, but marked as not_applicable or not_available", fund.recommended_but_missing_lines, ["compound_id", "requirement_level", "reason"]);
-                addRows("Metrics which are missing from the fil", fund.missing_metrics, ["compound_id", "requirement_level", "reason"]);
+                addRows("Metrics which are missing from the file", fund.missing_metrics, ["compound_id", "requirement_level", "reason"]);
                 addRows("Other metrics marked 'not_applicable' or 'not_provided'", fund.blank_lines, ["compound_id", "requirement_level", "reason"]);
                 
                 // Convert to CSV format

@@ -120,7 +120,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                     "Minimum" if compound_id in MINIMUM_METRICS
                     else "Recommended" if compound_id in RECOMMENDED_METRICS
                     else "Full" if compound_id in FULL_METRICS
-                    else "Value not required"
+                    else "Value not required (optional)"
                 )
             
             missing_metrics.append({
@@ -378,7 +378,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                     })
                     blank_lines = [line for line in blank_lines if line["compound_id"] != total_field]
                     
-                elif company_metrics[total_field] == "":
+                elif company_metrics[total_field] == "" and total_status not in ["not_applicable", "not_available"]:
                     #Replace line in missing metrics with more detail
                     missing_metrics = [line for line in missing_metrics if line["compound_id"] != total_field]
                     missing_metrics.append({
@@ -419,7 +419,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                         })
                         blank_lines = [line for line in blank_lines if line["compound_id"] != dependent_id]
                         
-                    elif company_metrics[dependent_id] == "":
+                    elif company_metrics[dependent_id] == "" and company_statuses.get(dependent_id, "") not in ["not_applicable", "not_available"]:
                         #Replace line in missing metrics with more detail
                         missing_metrics = [line for line in missing_metrics if line["compound_id"] != dependent_id]
                         missing_metrics.append({
@@ -1007,7 +1007,7 @@ def validate_metrics_by_fund(fund_data: dict, schema: dict):
         {
             "condition_id": "article_9_sustainable_investment_commitment",
             "condition_value": "yes",
-            "dependent_ids": ["article_8_sustainable_investment_commitment_minimum_share_percentage"]
+            "dependent_ids": ["article_9_sustainable_investment_commitment_minimum_share_percentage"]
         },
         {
             "condition_id": "article_9_eu_taxonomy_alignment",
@@ -1119,7 +1119,7 @@ def validate_metrics_by_fund(fund_data: dict, schema: dict):
                         })
                         blank_lines = [line for line in blank_lines if line["compound_id"] != dependent_id]
                         
-                    elif fund_metrics[dependent_id] == "":
+                    elif fund_metrics[dependent_id] == "" and fund_statuses.get(dependent_id, "") not in ["not_applicable", "not_available"]:
                         #Replace line in missing metrics with more detail
                         missing_metrics = [line for line in missing_metrics if line["compound_id"] != dependent_id]
                         missing_metrics.append({
@@ -1430,7 +1430,7 @@ def validate_metrics_by_gp(gp_data: dict, schema: dict):
                     })
                     blank_lines = [line for line in blank_lines if line["compound_id"] != total_field]
                     
-                elif gp_metrics[total_field] == "":
+                elif gp_metrics[total_field] == "" and total_status not in ["not_applicable", "not_available"]:
                     #Replace line in missing metrics with more detail
                     missing_metrics = [line for line in missing_metrics if line["compound_id"] != total_field]
                     missing_metrics.append({
@@ -1469,7 +1469,7 @@ def validate_metrics_by_gp(gp_data: dict, schema: dict):
                         })
                         blank_lines = [line for line in blank_lines if line["compound_id"] != dependent_id]
                         
-                    elif gp_metrics[dependent_id] == "":
+                    elif gp_metrics[dependent_id] == "" and gp_statuses.get(dependent_id, "") not in ["not_applicable", "not_available"]:
                         #Replace line in missing metrics with more detail
                         missing_metrics = [line for line in missing_metrics if line["compound_id"] != dependent_id]
                         missing_metrics.append({
