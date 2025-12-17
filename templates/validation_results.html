@@ -124,9 +124,9 @@
     {% if file_error %}
         <div class="error-message">{{ file_error }}</div>
     {% else %}
-        <button id="convertToExcelBtn">Convert to Excel</button>
+        <button id="convertToExcelBtn">Convert to Excel (coming soon)</button>
 
-        <script>
+       <!-- <script>
             document.getElementById("convertToExcelBtn").addEventListener("click", function() {
 
                 // Assuming companies is a list of dictionaries
@@ -159,7 +159,7 @@
                 .catch(error => console.error("Error:", error));
             });
             
-        </script>
+        </script>-->
         <h2>Summary</h2>
         {% for company in companies %}
             <details>
@@ -190,7 +190,7 @@
                                         "Status": status,
                                         "Compound ID": item.compound_id,
                                         "Value": item.raw_value || "",
-                                        "Error Notes": item.error_notes || "",
+                                        "Error Notes": item.error_notes || item.warning_notes || "",
                                         "Recommended level": item.requirement_level || "",
                                         "Reason": item.reason || ""
                                     });
@@ -200,6 +200,7 @@
                             addRows("Valid Lines", company.correct_lines, ["compound_id", "raw_value","requirement_level"]);
                             addRows("Lines with value errors", company.error_lines, ["compound_id", "raw_value", "error_notes","requirement_level"]);
                             addRows("Unknown compound_id", company.unknown_lines, ["compound_id", "raw_value", "error_notes"]);
+                            addRows("Warnings (likely erroneous values)", company.warning_lines, ["compound_id", "raw_value", "warning_notes"]);
                             addRows("Strongly recommended, but marked as not_applicable or not_available", company.recommended_but_missing_lines, ["compound_id", "requirement_level", "reason"]);
                             addRows("Metrics which are missing from the file", company.missing_metrics, ["compound_id", "requirement_level", "reason"]);
                             addRows("Other metrics marked 'not_applicable' or 'not_provided'", company.blank_lines, ["compound_id", "requirement_level", "reason"]);
@@ -261,6 +262,27 @@
                                     <td>{{ line.compound_id }}</td>
                                     <td>{{ line.raw_value }}</td>
                                     <td>{{ line.error_notes }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <h3>Warnings (Likely Erroneous Values)</h3>
+                    <p>These values have been imported but may contain errors (e.g., totals that don't match the sum of their components).</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Compound ID</th>
+                                <th>Value (Raw)</th>
+                                <th>Warning Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for line in company.warning_lines %}
+                                <tr class="warning">
+                                    <td>{{ line.compound_id }}</td>
+                                    <td>{{ line.raw_value }}</td>
+                                    <td>{{ line.warning_notes }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

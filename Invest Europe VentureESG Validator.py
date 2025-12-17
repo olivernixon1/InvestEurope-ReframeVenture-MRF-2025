@@ -6,8 +6,7 @@ from flask import Flask, request, render_template, jsonify, send_file, after_thi
 import openpyxl
 from collections import defaultdict
 
-from validation_mappings.interdependencies import INTERDEPENDENCIES
-from validation_mappings.minimum_recommended import MINIMUM_METRICS, RECOMMENDED_METRICS, FULL_METRICS, OPTIONAL_METRICS, ALL_METRICS
+from validation_mappings.minimum_intermediate import MINIMUM_METRICS, INTERMEDIATE_METRICS, FULL_METRICS, OPTIONAL_METRICS, ALL_METRICS
 from validation_mappings.schema import SCHEMA_PORTCO, COMPOUND_ID_UNITS
 from validation_mappings.schema_fund import SCHEMA_FUND, FUND_COMPOUND_ID_UNITS, ALL_FUND_METRICS, REQUIRED_FUND_METRICS
 from validation_mappings.schema_gp import SCHEMA_GP, GP_COMPOUND_ID_UNITS, ALL_GP_METRICS, REQUIRED_GP_METRICS
@@ -103,11 +102,12 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
     blank_lines = []
     recommended_but_missing_lines = []
     missing_metrics = []
+    warning_lines = []
 
     # Collect metrics for each level
     required_metrics = {
         "minimum": MINIMUM_METRICS,
-        "recommended": RECOMMENDED_METRICS,
+        "intermediate": INTERMEDIATE_METRICS,
         "full": FULL_METRICS,
         "optional": OPTIONAL_METRICS
     }
@@ -118,7 +118,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
         if compound_id not in company_metrics:
             level = (
                     "Minimum" if compound_id in MINIMUM_METRICS
-                    else "Recommended" if compound_id in RECOMMENDED_METRICS
+                    else "Intermediate" if compound_id in INTERMEDIATE_METRICS
                     else "Full" if compound_id in FULL_METRICS
                     else "Value not required (optional)"
                 )
@@ -141,7 +141,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                 )
                 level = (
                     "Minimum" if compound_id in MINIMUM_METRICS
-                    else "Recommended" if compound_id in RECOMMENDED_METRICS
+                    else "Intermediate" if compound_id in INTERMEDIATE_METRICS
                     else "Full" if compound_id in FULL_METRICS
                     else "Value not required"
                 )
@@ -155,12 +155,12 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                             "requirement_level": level,
                             "reason": "Status is 'not_applicable' or 'not_available', but this is a 'minimum' metric.",
                         })
-                    elif level == "Recommended":
+                    elif level == "Intermediate":
                         if total_fte_number >= 15:
                             recommended_but_missing_lines.append({
                                 "compound_id": compound_id,
                                 "requirement_level": level,
-                                "reason": "Status is 'not_applicable' or 'not_available', but this is a 'recommended' metric for companies with FTE higher than 15.",
+                                "reason": "Status is 'not_applicable' or 'not_available', but this is an 'intermediate' metric for companies with FTE higher than 15.",
                             })
                         else:
                             blank_lines.append({
@@ -212,7 +212,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                 validation_data = {compound_id: typed_value}
                 level = (
                     "Minimum" if compound_id in MINIMUM_METRICS
-                    else "Recommended" if compound_id in RECOMMENDED_METRICS
+                    else "Intermediate" if compound_id in INTERMEDIATE_METRICS
                     else "Full" if compound_id in FULL_METRICS
                     else "Value not required"
                 )
@@ -246,6 +246,30 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
             "condition_id": "violating_ungp_oecd",
             "condition_value": "yes",
             "dependent_ids": ["type_of_violations_ungc_oecd_guidelines"]
+        },
+        #NEW in 2025
+        {
+            "condition_id": "cyber_other",
+            "condition_value": "yes",
+            "dependent_ids": ["cyber_other_specify"]
+        },
+        #NEW in 2025
+        {
+            "condition_id": "number_of_data_breaches",
+            "condition_value": "yes",
+            "dependent_ids": ["data_breaches_qualitative"]
+        },
+        #NEW in 2025
+        {
+            "condition_id": "number_of_esg_incidents",
+            "condition_value": "yes",
+            "dependent_ids": ["qualitative_info_esg_incidents"]
+        },
+        #NEW in 2025
+        {
+            "condition_id": "number_of_workrelated_injuries",
+            "condition_value": "yes",
+            "dependent_ids": ["workrelated_injuries_qualitative"]
         },
         {
             "condition_id": "eu_taxonomy_assessment",
@@ -291,23 +315,28 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
             "condition_value": "yes",
             "dependent_ids": ["listed_ticker"]
         },
-        {
-            "condition_id": "occurrence_of_esg_incidents",
-            "condition_value": "yes",
-            "dependent_ids": ["number_of_esg_incidents"]
-        },
-        {
-            "condition_id": "dedicated_sustainability_staff",
-            "condition_value": "yes",
-            "dependent_ids": [
-                "sustainability_staff_ceo",
-                "sustainability_staff_cso",
-                "sustainability_staff_cfo",
-                "sustainability_staff_board",
-                "sustainability_staff_management",
-                "sustainability_staff_none_of_above"
-            ]
-        },
+        
+        # REMOVED in 2025 Update
+        # {
+        #     "condition_id": "occurrence_of_esg_incidents",
+        #     "condition_value": "yes",
+        #     "dependent_ids": ["number_of_esg_incidents"]
+        # },
+        
+        # REMOVED in 2025 Update
+        # {
+        #     "condition_id": "dedicated_sustainability_staff",
+        #     "condition_value": "yes",
+        #     "dependent_ids": [
+        #         "sustainability_staff_ceo",
+        #         "sustainability_staff_cso",
+        #         "sustainability_staff_cfo",
+        #         "sustainability_staff_board",
+        #         "sustainability_staff_management",
+        #         "sustainability_staff_none_of_above"
+        #     ]
+        # },
+        
         {
             "condition_ids": [
                 "number_of_ftes_end_of_report_year_female",
@@ -351,11 +380,109 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                 "energy_consumption_renewable"
             ],
             "total_field": "total_energy_consumption"
+        },
+        
+        #New in 2025: Checking if csv states no responsibility but also states yes on one of the responsibility metrics
+        {
+            "conflict_trigger": "sustainability_responsibility_none",
+            "conflict_trigger_value": "yes",
+            "conflicting_fields": [
+                "sustainability_responsibility_officer",
+                "sustainability_responsibility_team",
+                "sustainability_responsibility_referent",
+                "sustainability_responsibility_cfo",
+                "sustainability_responsibility_ceo",
+                "sustainability_responsibility_cso",
+                "sustainability_responsibility_management"
+            ]
+        },
+        
+        #New in 2025: Checking if csv states no responsibility but also states yes on one of the responsibility metrics
+        {
+            "conflict_trigger": "cyber_no_programme",
+            "conflict_trigger_value": "yes",
+            "conflicting_fields": [
+                "cyber_scheduled_scans",
+                "cyber_penetration_testing",
+                "cyber_lifecycle_security_testing",
+                "cyber_other",
+            ]
+        },
+
+        # Sum validation checks - warn if total doesn't match sum of components
+        {
+            "sum_check": True,
+            "total_field": "gross_revenue",
+            "component_fields": ["gross_revenue_inside_eu", "gross_revenue_outside_eu"],
+            "tolerance_percent": 1
+        },
+        {
+            "sum_check": True,
+            "total_field": "turnover",
+            "component_fields": ["turnover_inside_eu", "turnover_outside_eu"],
+            "tolerance_percent": 1
+        },
+        {
+            "sum_check": True,
+            "total_field": "total_ghg_emissions",
+            "component_fields": ["total_scope_1_emissions", "total_scope_2_emissions", "total_scope_3_emissions"],
+            "tolerance_percent": 5
+        },
+        {
+            "sum_check": True,
+            "total_field": "total_energy_consumption",
+            "component_fields": ["energy_consumption_renewable", "non_renewable_energy_consumption"],
+            "tolerance_percent": 5
+        },
+        {
+            "sum_check": True,
+            "total_field": "total_ftes_end_of_report_year",
+            "component_fields": [
+                "number_of_ftes_end_of_report_year_female",
+                "number_of_ftes_end_of_report_year_male",
+                "number_of_ftes_end_of_report_year_non_binary",
+                "number_of_ftes_end_of_report_year_non_disclosed"
+            ],
+            "tolerance_percent": 5
+        },
+        {
+            "sum_check": True,
+            "total_field": "total_csuite_employees",
+            "component_fields": [
+                "number_of_csuite_female",
+                "number_of_csuite_male",
+                "number_of_csuite_non_binary",
+                "number_of_csuite_non_disclosed"
+            ],
+            "tolerance_percent": 5
+        },
+        {
+            "sum_check": True,
+            "total_field": "total_founders_still_employed",
+            "component_fields": [
+                "number_of_founders_still_employed_female",
+                "number_of_founders_still_employed_male",
+                "number_of_founders_still_employed_non_binary",
+                "number_of_founders_still_employed_non_disclosed"
+            ],
+            "tolerance_percent": 5
+        },
+        {
+            "sum_check": True,
+            "total_field": "total_number_of_board_members",
+            "component_fields": [
+                "number_of_board_members_female",
+                "number_of_board_members_male",
+                "number_of_board_members_non_binary",
+                "number_of_board_members_non_disclosed"
+            ],
+            "tolerance_percent": 5
         }
+        
     ]
 
     minimum = MINIMUM_METRICS[:]
-    recommended = RECOMMENDED_METRICS[:]
+    intermediate = INTERMEDIATE_METRICS[:]
     full = FULL_METRICS[:]
     
     for relation in special_relations:
@@ -401,7 +528,92 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                     
                 
                     
+        # New in 2025: Checks for conflicting values, e.g., sustainability_responsibility_none = 'yes' conflicts with any other responsibility = 'yes'
+
+        elif "conflict_trigger" in relation:
+
+            trigger_field = relation["conflict_trigger"]
+            trigger_value = relation["conflict_trigger_value"]
+            conflicting_fields = relation["conflicting_fields"]
+
+            if company_metrics.get(trigger_field) == trigger_value:
+
+                for conflicting_field in conflicting_fields:
+
+                    if company_metrics.get(conflicting_field) == "yes":
+
+                        # Move from valid_lines to error_lines
+
+                        valid_lines = [line for line in valid_lines if line["compound_id"] != conflicting_field]
+
+                        blank_lines = [line for line in blank_lines if line["compound_id"] != conflicting_field]
+
+                        error_lines.append({
+                            "compound_id": conflicting_field,
+                            "raw_value": "yes",
+                            "error_notes": f"Conflict: '{conflicting_field}' is 'yes' but '{trigger_field}' is also '{trigger_value}'. If '{trigger_field}' is '{trigger_value}', then '{conflicting_field}' should be 'no'.",
+                        })
+        
+        # Checks if total field matches sum of component fields (within tolerance)
+
+        elif "sum_check" in relation:
+
+            total_field = relation["total_field"]
+
+            component_fields = relation["component_fields"]
+
+            tolerance_percent = relation.get("tolerance_percent", 1)
+
+            # Get total value if it exists and is numeric
+            total_raw = company_metrics.get(total_field, "")
+
+            if total_raw and total_raw != "":
+
+                total_value = get_typed_value(schema=schema, value=total_raw, compound_id=total_field)
+
+                if total_value is not None and isinstance(total_value, (int, float)):
+
+                    # Sum up component values (only those that exist and are numeric)
+                    component_sum = 0
+                    components_found = []
+
+                    for comp_field in component_fields:
+
+                        comp_raw = company_metrics.get(comp_field, "")
+
+                        if comp_raw and comp_raw != "":
+
+                            comp_value = get_typed_value(schema=schema, value=comp_raw, compound_id=comp_field)
+
+                            if comp_value is not None and isinstance(comp_value, (int, float)):
+
+                                component_sum += comp_value
+                                components_found.append(comp_field)
+
+                    # Only check if at least one component was found
+
+                    if components_found:
+
+                        # Calculate tolerance
+                        if total_value == 0:
+                            # If total is 0, components should also sum to 0
+                            is_mismatch = component_sum != 0
+
+                        else:
+                            tolerance = abs(total_value) * (tolerance_percent / 100)
+                            is_mismatch = abs(total_value - component_sum) > tolerance
+
+                        if is_mismatch:
+                            warning_lines.append({
+                                "compound_id": total_field,
+                                "raw_value": total_raw,
+                                "warning_notes": f"Sum mismatch: '{total_field}' is {total_value}, but sum of [{', '.join(components_found)}] is {component_sum}. Difference exceeds {tolerance_percent}% tolerance.",
+                            })
+
+ 
+
         # Checks dependencies, e.g., percentage_turnover_tobacco_activities is required if tobacco_activities = 'yes'
+
         else:  
             condition_id = relation["condition_id"]
             condition_value = relation["condition_value"]
@@ -450,8 +662,8 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                         
                     if condition_id in minimum:
                         minimum.append(dependent_id)
-                    if condition_id in recommended:
-                        recommended.append(dependent_id)
+                    if condition_id in intermediate:
+                        intermediate.append(dependent_id)
                     if condition_id in full:
                         full.append(dependent_id)
 
@@ -486,8 +698,8 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
     # Count missing metrics by level, considering hierarchy and error lines
     missing_counts = {
         "minimum": sum(1 for m in missing_metrics if m["requirement_level"] == "minimum") + sum(1 for e in error_lines if e["compound_id"] in minimum),
-        "recommended": sum(1 for m in missing_metrics if m["requirement_level"] in ["minimum", "recommended"]) + sum(1 for e in error_lines if e["compound_id"] in recommended),
-        "full": sum(1 for m in missing_metrics if m["requirement_level"] in ["minimum", "recommended", "full"]) + sum(1 for e in error_lines if e["compound_id"] in full),
+        "intermediate": sum(1 for m in missing_metrics if m["requirement_level"] in ["minimum", "intermediate"]) + sum(1 for e in error_lines if e["compound_id"] in intermediate),
+        "full": sum(1 for m in missing_metrics if m["requirement_level"] in ["minimum", "intermediate", "full"]) + sum(1 for e in error_lines if e["compound_id"] in full),
     }
 
     # Return the company summary
@@ -497,10 +709,10 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
         "valid_lines": len(valid_lines),
         "invalid_lines": len(error_lines)+ len(missing_metrics),
         "percent_min": percentages["minimum"],
-        "percent_rec": percentages["recommended"],
+        "percent_rec": percentages["intermediate"],
         "percent_full": percentages["full"],
         "missing_minimum": missing_counts["minimum"],
-        "missing_recommended": missing_counts["recommended"],
+        "missing_intermediate": missing_counts["intermediate"],
         "missing_full": missing_counts["full"],
         "correct_lines": valid_lines,
         "error_lines": error_lines,
@@ -508,6 +720,7 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
         "missing_metrics": missing_metrics,
         "blank_lines": blank_lines,
         "recommended_but_missing_lines": recommended_but_missing_lines,
+        "warning_lines": warning_lines,
     }
 
 def get_interpreted_value_portco(value: str, compound_id: str):
@@ -673,136 +886,144 @@ def convert_valid_data_to_excel():
             'supply_chain_policy': [49],
             'cybersecurity_data_management_policy': [50],
             'dedicated_sustainability_staff': [51],
-            'sustainability_staff_ceo': [53],
-            'sustainability_staff_cso': [54],
-            'sustainability_staff_cfo': [55],
-            'sustainability_staff_board': [56],
-            'sustainability_staff_management': [57],
-            'sustainability_staff_none_of_above': [58],
-            'occurrence_of_esg_incidents': [62],
-            'number_of_esg_incidents': [63],
-            'eu_taxonomy_assessment': [69],
-            'percentage_turnover_eu_taxonomy': [70],
-            'percentage_capex_eu_taxonomy': [71],
-            'percentage_opex_eu_taxonomy': [72],
-            'tobacco_activities': [76],
-            'percentage_turnover_tobacco_activities': [77],
-            'hard_coal_and_lignite_activities': [78],
-            'percentage_turnover_hard_coal_and_lignite_activities': [79],
-            'oil_fuels_activities': [80],
-            'percentage_turnover_oil_fuels_activities': [81],
-            'gaseous_fuels_activities': [82],
-            'percentage_turnover_gaseous_fuels_activities': [83],
-            'high_ghg_intensity_electricity_generation': [84],
-            'percentage_turnover_high_ghg_intensity_electricity_generation': [85],
-            'subject_to_csrd_reporting': [89],
-            'ems_implemented': [95],
-            'other_ems_certification': [96],
-            'ghg_scope_measured_calculated': [100],
-            'total_ghg_emissions': [101],
-            'total_scope_1_emissions': [102, 226],
-            'total_scope_1_emissions_methodology': [103],
-            'total_scope_2_emissions': [104],
-            'total_scope_2_emissions_methodology': [105],
-            'total_scope_3_emissions': [106, 229],
-            'total_scope_3_emissions_methodology': [107],
-            'scope_3_emissions_purchased_goods_and_services': [108],
-            'scope_3_emissions_capital_goods': [109],
-            'scope_3_emissions_fuel_and_energy_related_not_in_scopes_1_2': [110],
-            'scope_3_emissions_upstream_transportation_distribution': [111],
-            'scope_3_emissions_waste_generated_in_operations': [112],
-            'scope_3_emissions_business_travel': [113],
-            'scope_3_emissions_employee_commuting': [114],
-            'scope_3_emissions_upstream_leased_assets': [115],
-            'scope_3_emissions_downstream_transportation_distribution': [116],
-            'scope_3_emissions_processing_of_sold_products': [117],
-            'scope_3_emissions_use_of_sold_products': [118],
-            'scope_3_emissions_endoflife_treatment_of_sold_products': [119],
-            'scope_3_emissions_downstream_leased_assets': [120],
-            'scope_3_emissions_franchises': [121],
-            'scope_3_emissions_investments': [122],
-            'decarbonisation_strategy_set': [126],
-            'ghg_reduction_target_set': [127],
-            'long_term_net_zero_goal_set': [128],
-            'total_energy_consumption': [132, 239],
-            'energy_consumption_renewable': [133, 241],
-            'total_emissions_to_water': [137, 283],
-            'quantity_hazardous_radioactive_waste_generated': [138, 287],
-            'circular_economy_principles': [139],
-            'sites_affecting_biodiversity_areas': [143, 279],
-            'number_of_ftes_end_of_report_year_female': [149],
-            'number_of_ftes_end_of_report_year_non_binary': [150],
-            'number_of_ftes_end_of_report_year_non_disclosed': [151],
-            'number_of_ftes_end_of_report_year_male': [152],
-            'total_csuite_employees': [153],
-            'number_of_csuite_female': [154],
-            'number_of_csuite_non_binary': [155],
-            'number_of_csuite_non_disclosed': [156],
-            'number_of_csuite_male': [157],
-            'total_founders_still_employed': [158],
-            'number_of_founders_still_employed_female': [159],
-            'number_of_founders_still_employed_non_binary': [160],
-            'number_of_founders_still_employed_non_disclosed': [161],
-            'number_of_founders_still_employed_male': [162],
-            'unadjusted_gender_pay_gap': [166, 300], 
-            'number_of_new_hires_inside_eu_fte': [170],
-            'number_of_new_hires_outside_eu_fte': [171],
-            'number_of_leavers_inside_eu_fte': [172],
-            'number_of_leavers_outside_eu_fte': [173],
-            'number_of_new_hires_ma_fte': [174],
-            'number_of_leavers_ma_fte': [175],
-            'number_of_organic_net_new_hires_fte': [176],
-            'number_of_total_net_new_hires_fte': [177],
-            'turnover_fte': [178],
-            'implements_employee_survey_questionnaires': [182],
-            'percentage_employees_responding_employee_survey': [183],
-            'implemented_whistleblower_procedure': [184],
-            'average_hours_training_employees_taken_during_reporting_period': [188],
-            'number_of_workrelated_injuries': [192],
-            'number_of_workrelated_fatalities': [193],
-            'days_lost_due_to_injury': [194],
-            'human_rights_due_diligence_process': [198],
-            'total_number_of_board_members': [204, 306],
-            'number_of_board_members_female': [205, 304],
-            'number_of_board_members_non_binary': [206],
-            'number_of_board_members_non_disclosed': [207],
-            'number_of_board_members_male': [208, 305],
-            'number_of_board_members_underrepresented_groups': [209],
-            'number_of_independent_board_members': [210],
-            'number_of_data_breaches': [214],
-            'total_scope_2_emissions_location_based': [227],
-            'total_scope_2_emissions_market_based': [228],
-            'total_ghg_emissions_location_based': [230],
-            'total_ghg_emissions_market_based': [231],
-            'active_in_fossil_sector': [235],
-            'non_renewable_energy_consumption': [240],
-            'total_energy_production': [242],
-            'non_renewable_energy_production': [243],
-            'renewable_energy_production': [244],
-            'high_impact_climate_section_a_agriculture_forestry_fishing': [249],
-            'high_impact_climate_section_a_agriculture_forestry_fishing_energy_consumption_gwh': [250],
-            'high_impact_climate_section_a_agriculture_forestry_fishing_gross_revenue': [251],
-            'high_impact_climate_section_b_mining_quarrying': [252],
-            'high_impact_climate_section_b_mining_quarrying_energy_consumption_gwh': [253],
-            'high_impact_climate_section_b_mining_quarrying_gross_revenue': [254],
-            'high_impact_climate_section_c_manufacturing': [255],
-            'high_impact_climate_section_c_manufacturing_energy_consumption_gwh': [256],
-            'high_impact_climate_section_c_manufacturing_gross_revenue': [257],
-            'high_impact_climate_section_d_electricity_gas_steam_air_conditioning_supply': [258],
-            'high_impact_climate_section_d_electricity_gas_steam_air_conditioning_supply_energy_consumption_gwh': [259],
-            'high_impact_climate_section_d_electricity_gas_steam_air_conditioning_supply_gross_revenue': [260],
-            'high_impact_climate_section_e_water_supply_sewerage_waste_management_remediation_activities': [261],
-            'high_impact_climate_section_e_water_supply_sewerage_waste_management_remediation_activities_energy_consumption_gwh': [262],
-            'high_impact_climate_section_e_water_supply_sewerage_waste_management_remediation_activities_gross_revenue': [263],
-            'high_impact_climate_section_f_construction': [264],
-            'high_impact_climate_section_f_construction_energy_consumption_gwh': [265],
-            'high_impact_climate_section_f_construction_gross_revenue': [266],
-            'high_impact_climate_section_g_wholesale_retail_trade_repair_motor_vehicles_motorcycles': [267],
-            'high_impact_climate_section_g_wholesale_retail_trade_repair_motor_vehicles_motorcycles_energy_consumption_gwh': [268],
-            'high_impact_climate_section_g_wholesale_retail_trade_repair_motor_vehicles_motorcycles_gross_revenue': [269],
-            'high_impact_climate_section_h_transportation_storage': [270],
-            'high_impact_climate_section_h_transportation_storage_energy_consumption_gwh': [271],
-            'high_impact_climate_section_h_transportation_storage_gross_revenue': [272]
+            'responsible_ai_policy': [51],
+            'sustainability_responsibility_officer': [53],
+            'sustainability_responsibility_team': [54],
+            'sustainability_responsibility_referent': [55],
+            'sustainability_responsibility_cfo': [56],
+            'sustainability_responsibility_ceo': [57],
+            'sustainability_responsibility_cso': [58],
+            'sustainability_responsibility_management': [59],
+            'sustainability_responsibility_none':[60],
+            'number_of_esg_incidents': [64],
+            'qualitative_info_esg_incidents': [65],
+            'eu_taxonomy_assessment': [71],
+            'percentage_turnover_eu_taxonomy': [72],
+            'percentage_capex_eu_taxonomy': [73],
+            'percentage_opex_eu_taxonomy': [74],
+            'tobacco_activities': [78],
+            'percentage_turnover_tobacco_activities': [79],
+            'hard_coal_and_lignite_activities': [80],
+            'percentage_turnover_hard_coal_and_lignite_activities': [81],
+            'oil_fuels_activities': [82],
+            'percentage_turnover_oil_fuels_activities': [83],
+            'gaseous_fuels_activities': [84],
+            'percentage_turnover_gaseous_fuels_activities': [85],
+            'high_ghg_intensity_electricity_generation': [86],
+            'percentage_turnover_high_ghg_intensity_electricity_generation': [87],
+            'subject_to_csrd_reporting': [91],
+            'ems_implemented': [97],
+            'environmental_risk_tools': [98],
+            'ghg_scope_measured_calculated': [102],
+            'total_ghg_emissions': [103],
+            'total_scope_1_emissions': [104, 224],
+            'total_scope_1_emissions_methodology': [105],
+            'total_scope_2_emissions': [106],
+            'total_scope_2_emissions_methodology': [107],
+            'total_scope_3_emissions': [108, 227],
+            'total_scope_3_emissions_methodology': [109],
+            'scope_3_primary_source': [110],
+            'scope_3_primary_source_emissions': [111],
+            'scope_3_secondary_source': [112],
+            'scope_3_secondary_source_emissions': [113],
+            'decarbonisation_strategy_set': [117],
+            'ghg_reduction_target_set': [118],
+            'long_term_net_zero_goal_set': [119],
+            'year_on_year_emissions_profile': [120],
+            'year_on_year_emissions_profile_qualitative': [121],
+            'contribution_to_climate_solutions': [122],
+            
+            'total_energy_consumption': [126, 237],
+            'energy_consumption_renewable': [127, 239],
+            'total_emissions_to_water': [131, 281],
+            'quantity_hazardous_radioactive_waste_generated': [132, 285],
+            'circular_economy_principles': [133],
+            'sites_affecting_biodiversity_areas': [137, 277],
+            'number_of_ftes_end_of_report_year_female': [143],
+            'number_of_ftes_end_of_report_year_non_binary': [144],
+            'number_of_ftes_end_of_report_year_non_disclosed': [145],
+            'number_of_ftes_end_of_report_year_male': [146],
+            'total_csuite_employees': [147],
+            'number_of_csuite_female': [148],
+            'number_of_csuite_non_binary': [149],
+            'number_of_csuite_non_disclosed': [150],
+            'number_of_csuite_male': [151],
+            'total_founders_still_employed': [152],
+            'number_of_founders_still_employed_female': [153],
+            'number_of_founders_still_employed_non_binary': [154],
+            'number_of_founders_still_employed_non_disclosed': [155],
+            'number_of_founders_still_employed_male': [156],
+            'unadjusted_gender_pay_gap': [160, 298], 
+            'number_of_new_hires_inside_eu_fte': [164],
+            'number_of_new_hires_outside_eu_fte': [165],
+            'number_of_leavers_inside_eu_fte': [166],
+            'number_of_leavers_outside_eu_fte': [167],
+            'number_of_new_hires_ma_fte': [168],
+            'number_of_leavers_ma_fte': [169],
+            'number_of_organic_net_new_hires_fte': [170],
+            'number_of_total_net_new_hires_fte': [171],
+            'turnover_fte': [172],
+            'implements_employee_survey_questionnaires': [176],
+            'percentage_employees_responding_employee_survey': [177],
+            'implemented_whistleblower_procedure': [178],
+            'number_of_workrelated_injuries': [182],
+            'workrelated_injuries_qualitative': [183],
+            'number_of_workrelated_fatalities': [184],
+            'days_lost_due_to_injury': [185],
+            'human_rights_due_diligence_process': [189],
+            'total_number_of_board_members': [195, 304],
+            'number_of_board_members_female': [196, 302],
+            'number_of_board_members_non_binary': [197],
+            'number_of_board_members_non_disclosed': [198],
+            'number_of_board_members_male': [199, 303],
+            'number_of_board_members_underrepresented_groups': [200],
+            'number_of_independent_board_members': [201],
+            'number_of_data_breaches': [205],
+            'data_breaches_qualitative': [206],
+            'cyber_scheduled_scans': [208],
+            'cyber_penetration_testing': [209],
+            'cyber_lifecycle_security_testing': [210],
+            'cyber_other': [211],
+            'cyber_other_specify': [212],
+            'cyber_no_programme': [213],
+            
+            'total_scope_2_emissions_location_based': [225],
+            'total_scope_2_emissions_market_based': [226],
+            'total_ghg_emissions_location_based': [228],
+            'total_ghg_emissions_market_based': [229],
+            'active_in_fossil_sector': [233],
+            'non_renewable_energy_consumption': [238],
+            'total_energy_production': [240],
+            'non_renewable_energy_production': [241],
+            'renewable_energy_production': [242],
+            'high_impact_climate_section_a_agriculture_forestry_fishing': [247],
+            'high_impact_climate_section_a_agriculture_forestry_fishing_energy_consumption_gwh': [248],
+            'high_impact_climate_section_a_agriculture_forestry_fishing_gross_revenue': [249],
+            'high_impact_climate_section_b_mining_quarrying': [250],
+            'high_impact_climate_section_b_mining_quarrying_energy_consumption_gwh': [251],
+            'high_impact_climate_section_b_mining_quarrying_gross_revenue': [252],
+            'high_impact_climate_section_c_manufacturing': [253],
+            'high_impact_climate_section_c_manufacturing_energy_consumption_gwh': [254],
+            'high_impact_climate_section_c_manufacturing_gross_revenue': [255],
+            'high_impact_climate_section_d_electricity_gas_steam_air_conditioning_supply': [256],
+            'high_impact_climate_section_d_electricity_gas_steam_air_conditioning_supply_energy_consumption_gwh': [257],
+            'high_impact_climate_section_d_electricity_gas_steam_air_conditioning_supply_gross_revenue': [258],
+            'high_impact_climate_section_e_water_supply_sewerage_waste_management_remediation_activities': [259],
+            'high_impact_climate_section_e_water_supply_sewerage_waste_management_remediation_activities_energy_consumption_gwh': [260],
+            'high_impact_climate_section_e_water_supply_sewerage_waste_management_remediation_activities_gross_revenue': [262],
+            'high_impact_climate_section_f_construction': [262],
+            'high_impact_climate_section_f_construction_energy_consumption_gwh': [263],
+            'high_impact_climate_section_f_construction_gross_revenue': [264],
+            'high_impact_climate_section_g_wholesale_retail_trade_repair_motor_vehicles_motorcycles': [265],
+            'high_impact_climate_section_g_wholesale_retail_trade_repair_motor_vehicles_motorcycles_energy_consumption_gwh': [266],
+            'high_impact_climate_section_g_wholesale_retail_trade_repair_motor_vehicles_motorcycles_gross_revenue': [267],
+            'high_impact_climate_section_h_transportation_storage': [268],
+            'high_impact_climate_section_h_transportation_storage_energy_consumption_gwh': [269],
+            'high_impact_climate_section_h_transportation_storage_gross_revenue': [270],
+            'violating_ungp_oecd': [289],
+            'type_of_violations_ungc_oecd_guidelines':[290],
+            'has_processes_monitor_ungp_oecd':[294],
+            'involved_in_controversial_weapons':[308],
         }
 
         current_col = 5  # Starting column (E)
@@ -945,6 +1166,11 @@ def validate_metrics_by_fund(fund_data: dict, schema: dict):
             "condition_id": "good_governance_post_investment",
             "condition_value": "yes",
             "dependent_ids": ["good_governance_post_investment_frequency"]
+        },
+        {
+            "condition_id": "adhere_to_ungc",
+            "condition_value": "no",
+            "dependent_ids": ["no_ungc_explanation"]
         },
         {
             "condition_id": "fund_marketing_under_sfdr",
@@ -1362,12 +1588,11 @@ def validate_metrics_by_gp(gp_data: dict, schema: dict):
                 "use_of_international_disclosing_standard_tcfd",
                 "use_of_international_disclosing_standard_gri",
                 "use_of_international_disclosing_standard_sasb",
-                "use_of_international_disclosing_standard_cdsb",
-                "use_of_international_disclosing_standard_ghg_protocol",
                 "use_of_international_disclosing_standard_tnfd",
                 "use_of_international_disclosing_standard_sbti",
                 "use_of_international_disclosing_standard_cdp",
-                "use_of_international_disclosing_standard_wef",
+                "use_of_international_disclosing_standard_issb",
+                "use_of_international_disclosing_standard_esrs",
                 "use_of_international_disclosing_standard_other"
             ]
         },
@@ -1376,12 +1601,10 @@ def validate_metrics_by_gp(gp_data: dict, schema: dict):
             "condition_value": "yes",
             "dependent_ids": [
                 "participates_in_sustainability_climate_initiatives_pri",
-                "participates_in_sustainability_climate_initiatives_nzaoa",
                 "participates_in_sustainability_climate_initiatives_nzami",
                 "participates_in_sustainability_climate_initiatives_ici",
-                "participates_in_sustainability_climate_initiatives_the_investor_agenda",
                 "participates_in_sustainability_climate_initiatives_transition_pathway_initiative",
-                "participates_in_sustainability_climate_initiatives_iigcc",
+                "participates_in_sustainability_climate_initiatives_smi",
                 "participates_in_sustainability_climate_initiatives_other"
             ]
         },
@@ -1389,6 +1612,12 @@ def validate_metrics_by_gp(gp_data: dict, schema: dict):
             "condition_id": "ems_implemented",
             "condition_value": "yes_other_ems_certification",
             "dependent_ids": ["other_ems_certification"]
+        },
+        #NEW in 2025
+        {
+            "condition_id": "number_of_esg_incidents",
+            "condition_value": "yes",
+            "dependent_ids": ["qualitative_info_esg_incidents"]
         },
         {
             "condition_ids": [

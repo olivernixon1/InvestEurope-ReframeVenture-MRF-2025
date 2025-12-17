@@ -36,6 +36,21 @@ SCHEMA_FUND = {
         "allowed": list(OPTIONS_FUND["yes_no_best_efforts"].keys()),
     },
     
+    #NEW in 2025
+    #0.2.5
+    #STRING from yes_no_best_efforts
+    "adhere_to_ungc": {
+        "type": "string",
+        "allowed": list(OPTIONS_FUND["yes_no_best_efforts"].keys()),
+    },
+    
+    #NEW in 2025
+    #0.2.5.1
+    #STRING from yes_no_best_efforts
+    "no_ungc_explanation": {
+        "type": "string",
+    },
+    
     #0.3.1
     #STRING from yes_no_asset_scope
     "esg_engagement_process": {
@@ -64,19 +79,22 @@ SCHEMA_FUND = {
         "allowed": ["yes", "no"],
     },
     
+    #Updated validation options in 2025
     #0.3.5
     #STRING from yes_no
     "good_governance_post_investment": {
         "type": "string",
+        "allowed": list(OPTIONS_FUND["yes_no_periods"].keys()),
+    },
+    
+    #NEW in 2025
+    #0.3.6
+    #STRING from yes_no
+    "responsible_ai_dd": {
+        "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.3.5.1
-    #STRING from yes_no_incident_process
-    "good_governance_post_investment_frequency": {
-        "type": "string",
-        "allowed": list(OPTIONS_FUND["frequency_options"].keys()),
-    },
     
     #1.1.1
     #STRING from yes_no_incident_process
@@ -415,62 +433,64 @@ FUND_COMPOUND_ID_UNITS = {
 }
 
 ALL_FUND_METRICS = [
-    "fund_name",
-    "legal_esg_commitment",
-    "esg_investment_policy",
-    "climate_change_investment_policy",
-    "diversity_in_term_sheets_shareholder_agreements",
-    "esg_engagement_process",
-    "esg_monitoring_processes",
-    "esg_incident_report_process",
-    "good_governance_due_diligence",
-    "good_governance_post_investment",
-    "good_governance_post_investment_frequency",
-    "fund_marketing_under_sfdr",
-    "article_8_sustainable_investment_commitment",
-    "article_8_sustainable_investment_commitment_minimum_share_percentage",
-    "article_8_eu_taxonomy_alignment",
-    "article_8_eu_taxonomy_alignment_minimum_share_percentage",
-    "article_8_non_eu_taxonomy_environmental_objective",
-    "article_8_non_eu_taxonomy_environmental_objective_minimum_share_percentage",
-    "article_8_social_objective_investment",
-    "article_8_social_objective_investment_minimum_share_percentage",
-    "article_8_considers_significant_negative_impacts",
-    "article_8_ghg_reduction_target",
-    "article_8_ghg_reduction_target_main_strategy",
-    "article_8_ghg_reduction_target_ambition",
-    "article_8_ghg_reduction_target_financed_emissions_baseline",
-    "article_8_ghg_reduction_target_base_year",
-    "article_8_ghg_reduction_target_target_year",
-    "article_8_ghg_reduction_target_financed_emissions_reporting",
-    "article_8_uses_index_as_reference_benchmark",
-    "article_9_sustainable_investment_commitment",
-    "article_9_sustainable_investment_commitment_minimum_share_percentage",
-    "article_9_eu_taxonomy_alignment",
-    "article_9_eu_taxonomy_alignment_minimum_share_percentage",
-    "article_9_non_eu_taxonomy_environmental_objective",
-    "article_9_non_eu_taxonomy_environmental_objective_minimum_share_percentage",
-    "article_9_social_objective_investment",
-    "article_9_social_objective_investment_minimum_share_percentage",
-    "article_9_considers_significant_negative_impacts",
-    "article_9_ghg_reduction_target",
-    "article_9_ghg_reduction_target_main_strategy",
-    "article_9_ghg_reduction_target_ambition",
-    "article_9_ghg_reduction_target_financed_emissions_baseline",
-    "article_9_ghg_reduction_target_base_year",
-    "article_9_ghg_reduction_target_target_year",
-    "article_9_ghg_reduction_target_financed_emissions_reporting",
-    "article_9_ghg_reduction_target_1_5_c_aligned",
-    "article_9_uses_index_as_reference_benchmark",
-    "total_number_of_partners",
-    "number_of_partners_female",
-    "number_of_partners_non_binary",
-    "number_of_partners_non_disclosed",
-    "number_of_partners_male",
-    "gender_diversity_pipeline_tracked",
-    "gender_diversity_pipeline_strategy_fit",
-    "gender_diversity_pipeline_dd_undertaken",
-    "gender_diversity_pipeline_term_sheet_issued"
+  "fund_name",
+  "legal_esg_commitment",
+  "esg_investment_policy",
+  "climate_change_investment_policy",
+  "diversity_in_term_sheets_shareholder_agreements",
+  "adhere_to_ungc",
+  "no_ungc_explanation",
+  "esg_engagement_process",
+  "esg_monitoring_processes",
+  "esg_incident_report_process",
+  "good_governance_due_diligence",
+  "good_governance_post_investment",
+  "responsible_ai_dd",
+  "fund_marketing_under_sfdr",
+  "article_8_sustainable_investment_commitment",
+  "article_8_sustainable_investment_commitment_minimum_share_percentage",
+  "article_8_eu_taxonomy_alignment",
+  "article_8_eu_taxonomy_alignment_minimum_share_percentage",
+  "article_8_non_eu_taxonomy_environmental_objective",
+  "article_8_non_eu_taxonomy_environmental_objective_minimum_share_percentage",
+  "article_8_social_objective_investment",
+  "article_8_social_objective_investment_minimum_share_percentage",
+  "article_8_considers_significant_negative_impacts",
+  "article_8_ghg_reduction_target",
+  "article_8_ghg_reduction_target_main_strategy",
+  "article_8_ghg_reduction_target_ambition",
+  "article_8_ghg_reduction_target_financed_emissions_baseline",
+  "article_8_ghg_reduction_target_base_year",
+  "article_8_ghg_reduction_target_target_year",
+  "article_8_ghg_reduction_target_financed_emissions_reporting",
+  "article_8_uses_index_as_reference_benchmark",
+  "article_9_sustainable_investment_commitment",
+  "article_9_sustainable_investment_commitment_minimum_share_percentage",
+  "article_9_eu_taxonomy_alignment",
+  "article_9_eu_taxonomy_alignment_minimum_share_percentage",
+  "article_9_non_eu_taxonomy_environmental_objective",
+  "article_9_non_eu_taxonomy_environmental_objective_minimum_share_percentage",
+  "article_9_social_objective_investment",
+  "article_9_social_objective_investment_minimum_share_percentage",
+  "article_9_considers_significant_negative_impacts",
+  "article_9_ghg_reduction_target",
+  "article_9_ghg_reduction_target_main_strategy",
+  "article_9_ghg_reduction_target_ambition",
+  "article_9_ghg_reduction_target_financed_emissions_baseline",
+  "article_9_ghg_reduction_target_base_year",
+  "article_9_ghg_reduction_target_target_year",
+  "article_9_ghg_reduction_target_financed_emissions_reporting",
+  "article_9_ghg_reduction_target_1_5_c_aligned",
+  "article_9_uses_index_as_reference_benchmark",
+  "total_number_of_partners",
+  "number_of_partners_female",
+  "number_of_partners_non_binary",
+  "number_of_partners_non_disclosed",
+  "number_of_partners_male",
+  "gender_diversity_pipeline_tracked",
+  "gender_diversity_pipeline_strategy_fit",
+  "gender_diversity_pipeline_dd_undertaken",
+  "gender_diversity_pipeline_term_sheet_issued"
 ]
 
 
@@ -485,6 +505,7 @@ REQUIRED_FUND_METRICS = [
     "esg_incident_report_process",
     "good_governance_due_diligence",
     "good_governance_post_investment",
+    "responsible_ai_dd",
     "fund_marketing_under_sfdr",
     "total_number_of_partners",
     "number_of_partners_female",

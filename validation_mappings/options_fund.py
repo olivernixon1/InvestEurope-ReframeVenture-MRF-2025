@@ -43,4 +43,11 @@ OPTIONS_FUND = {
         "no": "No",
         "not_assessed": "Not assessed",
     },
+    
+    "yes_no_periods": {
+        "yes_quarterly": "Yes, quarterly",
+        "yes_semi_annually": "Yes, semi-annually",
+        "yes_annually": "Yes, annually",
+        "no": "No",
+    },
 }

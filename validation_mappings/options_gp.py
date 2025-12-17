@@ -31,4 +31,11 @@ OPTIONS_GP = {
         "direct_emissions_supplier_based": "Direct emissions/supplier-based",
         "other": "Other",
     },
+    
+    "whistleblower_procedure": {
+        "yes_eu_aligned": "Yes (aligned with the EU Whistleblower Directive)",
+        "yes_not_eu_aligned": "Yes (not aligned with the EU Whistleblower Directive)",
+        "no": "No",
+        "no_but_a_plan": "No (but plan to in the next 12 months)",
+    },
 }

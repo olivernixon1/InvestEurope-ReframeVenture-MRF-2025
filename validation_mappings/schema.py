@@ -16,6 +16,7 @@ SCHEMA_PORTCO = {
 
     #0.1.2.1
     #String
+    #Updated in 2025
     "business_identification_number_system": {
         "type": "string",
          "allowed": list(OPTIONS["business_identification_system"].keys()),
@@ -198,72 +199,153 @@ SCHEMA_PORTCO = {
         "allowed": ["yes", "no"],
     },
     
-    #0.2.1.12
+    #
+    # 0.2.1.12
     #STRING from yes_no_expanded
     "cybersecurity_data_management_policy": {
         "type": "string",
-        "allowed": list(OPTIONS["yes_no_expanded"].keys()),
+        "allowed": ["yes", "no"],
     },
     
-    #0.2.2
-    #STRING from yes_no
-    "dedicated_sustainability_staff": {
+    # NEW in 2025
+    # 0.2.1.13
+    #STRING from yes_no_expanded
+    "responsible_ai_policy": {
         "type": "string",
-        "allowed": list(OPTIONS["yes_no_expanded"].keys()),
+        "allowed": ["yes", "no"],
     },
+    
+    # ALL 0.2.2 METRICS REMOVED IN 2025 UPDATE
+    # #0.2.2
+    # #STRING from yes_no
+    # "dedicated_sustainability_staff": {
+    #     "type": "string",
+    #     "allowed": list(OPTIONS["yes_no_expanded"].keys()),
+    # },
 
-    #0.2.2.1
+    # #0.2.2.1
+    # #STRING from yes_no
+    # "sustainability_staff_ceo": {
+    #    "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
+    
+    # #0.2.2.2
+    # #STRING from yes_no
+    # "sustainability_staff_cso": {
+    #     "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
+    
+    # #0.2.2.3
+    # #STRING from yes_no
+    # "sustainability_staff_cfo": {
+    #    "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
+    
+    # #0.2.2.4
+    # #STRING from yes_no
+    # "sustainability_staff_board": {
+    #     "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
+    
+    # #0.2.2.5
+    # #STRING from yes_no
+    # "sustainability_staff_management": {
+    #    "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
+    
+    # #0.2.2.6
+    # #STRING from yes_no
+    # "sustainability_staff_none_of_above": {
+    #     "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
+    
+    # NEW in 2025
+    #0.2.3.1
     #STRING from yes_no
-    "sustainability_staff_ceo": {
+    "sustainability_responsibility_officer": {
        "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.2.2.2
+    # NEW in 2025
+    #0.2.3.2
     #STRING from yes_no
-    "sustainability_staff_cso": {
+    "sustainability_responsibility_team": {
         "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.2.2.3
+    # NEW in 2025
+    #0.2.3.3
     #STRING from yes_no
-    "sustainability_staff_cfo": {
+    "sustainability_responsibility_referent": {
        "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.2.2.4
+    # NEW in 2025
+    #0.2.3.4
     #STRING from yes_no
-    "sustainability_staff_board": {
+    "sustainability_responsibility_cfo": {
         "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.2.2.5
+    # NEW in 2025
+    #0.2.3.5
     #STRING from yes_no
-    "sustainability_staff_management": {
+    "sustainability_responsibility_ceo": {
        "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.2.2.6
+    # NEW in 2025
+    #0.2.3.6
     #STRING from yes_no
-    "sustainability_staff_none_of_above": {
+    "sustainability_responsibility_cso": {
         "type": "string",
         "allowed": ["yes", "no"],
     },
     
-    #0.3.1
+    # NEW in 2025
+    #0.2.3.7
     #STRING from yes_no
-    "occurrence_of_esg_incidents": {
+    "sustainability_responsibility_management": {
+       "type": "string",
+        "allowed": ["yes", "no"],
+    },
+    
+    # NEW in 2025
+    #0.2.3.8
+    #STRING from yes_no
+    "sustainability_responsibility_none": {
         "type": "string",
         "allowed": ["yes", "no"],
     },
+    
+    # Removed in 2025 update
+    # #0.3.1
+    # #STRING from yes_no
+    # "occurrence_of_esg_incidents": {
+    #     "type": "string",
+    #     "allowed": ["yes", "no"],
+    # },
 
     #0.3.1.1
     #Integer (positive)
     "number_of_esg_incidents": {"type": "integer", 'min': 0},
+    
+    #0.3.1.2
+    #String
+    "qualitative_info_esg_incidents": {
+        "type": "string",
+    },
 
     #1.1.1
     #STRING from yes_no
@@ -385,9 +467,10 @@ SCHEMA_PORTCO = {
         "allowed": list(OPTIONS["ems_presence_select"].keys()),
     },
 
-    #2.1.1.1
+    # MetriC ID Updated
+    # 2.1.1.1
     #String
-    "other_ems_certification": {
+    "environmental_risk_tools": {
         "type": "string",
     },
 
@@ -435,65 +518,92 @@ SCHEMA_PORTCO = {
         "allowed": list(OPTIONS["ghg_scope_3_methodology"].keys()),
     },
 
-    #2.2.5.2
-    #Float (positive)
-    "scope_3_emissions_purchased_goods_and_services": {"type": "float", 'min': 0},
+    # ALL METRICS FROM 2.2.5.2 - 2.2.5.16 REMOVED IN 2025
+    # #2.2.5.2
+    # #Float (positive)
+    # "scope_3_emissions_purchased_goods_and_services": {"type": "float", 'min': 0},
 
-    #2.2.5.3
-    #Float (positive)
-    "scope_3_emissions_capital_goods": {"type": "float", 'min': 0},
+    # #2.2.5.3
+    # #Float (positive)
+    # "scope_3_emissions_capital_goods": {"type": "float", 'min': 0},
 
-    #2.2.5.4
-    #Float (positive)
-    "scope_3_emissions_fuel_and_energy_related_not_in_scopes_1_2": {"type": "float", 'min': 0},
+    # #2.2.5.4
+    # #Float (positive)
+    # "scope_3_emissions_fuel_and_energy_related_not_in_scopes_1_2": {"type": "float", 'min': 0},
 
-    #2.2.5.5
-    #Float (positive)
-    "scope_3_emissions_upstream_transportation_distribution": {"type": "float", 'min': 0},
+    # #2.2.5.5
+    # #Float (positive)
+    # "scope_3_emissions_upstream_transportation_distribution": {"type": "float", 'min': 0},
 
-    #2.2.5.6
-    #Float (positive)
-    "scope_3_emissions_waste_generated_in_operations": {"type": "float", 'min': 0},
+    # #2.2.5.6
+    # #Float (positive)
+    # "scope_3_emissions_waste_generated_in_operations": {"type": "float", 'min': 0},
 
-    #2.2.5.7
-    #Float (positive)
-    "scope_3_emissions_business_travel": {"type": "float", 'min': 0},
+    # #2.2.5.7
+    # #Float (positive)
+    # "scope_3_emissions_business_travel": {"type": "float", 'min': 0},
 
-    #2.2.5.8
-    #Float (positive)
-    "scope_3_emissions_employee_commuting": {"type": "float", 'min': 0},
+    # #2.2.5.8
+    # #Float (positive)
+    # "scope_3_emissions_employee_commuting": {"type": "float", 'min': 0},
 
-    #2.2.5.9
-    #Float (positive)
-    "scope_3_emissions_upstream_leased_assets": {"type": "float", 'min': 0},
+    # #2.2.5.9
+    # #Float (positive)
+    # "scope_3_emissions_upstream_leased_assets": {"type": "float", 'min': 0},
 
-    #2.2.5.10
-    #Float (positive)
-    "scope_3_emissions_downstream_transportation_distribution": {"type": "float", 'min': 0},
+    # #2.2.5.10
+    # #Float (positive)
+    # "scope_3_emissions_downstream_transportation_distribution": {"type": "float", 'min': 0},
 
-    #2.2.5.11
-    #Float (positive)
-    "scope_3_emissions_processing_of_sold_products": {"type": "float", 'min': 0},
+    # #2.2.5.11
+    # #Float (positive)
+    # "scope_3_emissions_processing_of_sold_products": {"type": "float", 'min': 0},
 
-    #2.2.5.12
-    #Float (positive)
-    "scope_3_emissions_use_of_sold_products": {"type": "float", 'min': 0},
+    # #2.2.5.12
+    # #Float (positive)
+    # "scope_3_emissions_use_of_sold_products": {"type": "float", 'min': 0},
 
-    #2.2.5.13
-    #Float (positive)
-    "scope_3_emissions_endoflife_treatment_of_sold_products": {"type": "float", 'min': 0},
+    # #2.2.5.13
+    # #Float (positive)
+    # "scope_3_emissions_endoflife_treatment_of_sold_products": {"type": "float", 'min': 0},
 
-    #2.2.5.14
-    #Float (positive)
-    "scope_3_emissions_downstream_leased_assets": {"type": "float", 'min': 0},
+    # #2.2.5.14
+    # #Float (positive)
+    # "scope_3_emissions_downstream_leased_assets": {"type": "float", 'min': 0},
 
-    #2.2.5.15
-    #Float (positive)
-    "scope_3_emissions_franchises": {"type": "float", 'min': 0},
+    # #2.2.5.15
+    # #Float (positive)
+    # "scope_3_emissions_franchises": {"type": "float", 'min': 0},
     
-    #2.2.5.16
+    # #2.2.5.16
+    # #Float (positive)
+    # "scope_3_emissions_investments": {"type": "float", 'min': 0},
+    
+    # New in 2025
+    # 2.2.5.17
+    # STRING from ghg_scope_3_sources
+    "scope_3_primary_source": {
+        "type": "string",
+        "allowed": list(OPTIONS["ghg_scope_3_sources"].keys()),
+    },
+    
+    # New in 2025
+    # 2.2.5.18
     #Float (positive)
-    "scope_3_emissions_investments": {"type": "float", 'min': 0},
+    "scope_3_primary_source_emissions": {"type": "float", 'min': 0},
+    
+    # New in 2025
+    # 2.2.5.19
+    # STRING from ghg_scope_3_sources
+    "scope_3_secondary_source": {
+        "type": "string",
+        "allowed": list(OPTIONS["ghg_scope_3_sources"].keys()),
+    },
+    
+    # New in 2025
+    # 2.2.5.20
+    #Float (positive)
+    "scope_3_secondary_source_emissions": {"type": "float", 'min': 0},
 
     #2.3.1
     #STRING from decarbonisation_strategy
@@ -502,7 +612,8 @@ SCHEMA_PORTCO = {
         "allowed": list(OPTIONS["decarbonisation_strategy"].keys()),
     },
 
-    #2.3.2
+    # Updated option set in 2025
+    # 2.3.2
     #STRING from ghg_reduction_target
     "ghg_reduction_target_set": {
         "type": "string",
@@ -514,6 +625,29 @@ SCHEMA_PORTCO = {
     "long_term_net_zero_goal_set": {
         "type": "string",
         "allowed": list(OPTIONS["long_term_net_zero_goal"].keys()),
+    },
+    
+    # New in 2025
+    #2.3.4
+    #STRING from yes_no_expanded
+    "year_on_year_emissions_profile": {
+        "type": "string",
+        "allowed": list(OPTIONS["yes_no_expanded"].keys()),
+    },
+    
+    # New in 2025
+    # 2.3.4.1
+    #String
+    "year_on_year_emissions_profile_qualitative": {
+        "type": "string",
+    },
+    
+    # New in 2025
+    #2.3.6
+    #STRING from climate_solution_category
+    "contribution_to_climate_solutions": {
+        "type": "string",
+        "allowed": list(OPTIONS["climate_solution_category"].keys()),
     },
 
     #2.4.1
@@ -634,7 +768,14 @@ SCHEMA_PORTCO = {
     #3.6.1
     #Integer (positive)
     "number_of_workrelated_injuries": {"type": "integer", 'min': 0},
-
+    
+    # New in 2025
+    # 3.6.1.1
+    #String
+    "workrelated_injuries_qualitative": {
+        "type": "string",
+    },
+    
     #3.6.2
     #Integer (positive)
     "number_of_workrelated_fatalities": {"type": "integer", 'min': 0},
@@ -669,6 +810,60 @@ SCHEMA_PORTCO = {
     #4.2.1
     #Integer (positive)
     "number_of_data_breaches": {"type": "integer", 'min': 0},
+    
+    # New in 2025
+    # 4.2.1.1
+    #String
+    "data_breaches_qualitative": {
+        "type": "string",
+    },
+    
+    # NEW in 2025
+    #4.2.2.1
+    #STRING from yes_no
+    "cyber_scheduled_scans": {
+       "type": "string",
+        "allowed": ["yes", "no"],
+    },
+    
+    # NEW in 2025
+    #4.2.2.2
+    #STRING from yes_no
+    "cyber_penetration_testing": {
+        "type": "string",
+        "allowed": ["yes", "no"],
+    },
+    
+    # NEW in 2025
+    #4.2.2.3
+    #STRING from yes_no
+    "cyber_lifecycle_security_testing": {
+       "type": "string",
+        "allowed": ["yes", "no"],
+    },
+    
+    # NEW in 2025
+    #4.2.2.4
+    #STRING from yes_no
+    "cyber_other": {
+        "type": "string",
+        "allowed": ["yes", "no"],
+    },
+    
+    # New in 2025
+    # 4.2.2.4.1
+    #String
+    "cyber_other_specify": {
+        "type": "string",
+    },
+    
+    # NEW in 2025
+    #4.2.2.5
+    #STRING from yes_no
+    "cyber_no_programme": {
+        "type": "string",
+        "allowed": ["yes", "no"],
+    },
     
     #PAI 1.2
     #Float (positive)
@@ -871,7 +1066,6 @@ SCHEMA_PORTCO = {
         "type": "string",
         "allowed": ["yes", "no"],
     },
-    
 }
 
 # Dictionary mapping compound IDs to their units
@@ -879,6 +1073,11 @@ COMPOUND_ID_UNITS = {
     "percentage_turnover_eu_taxonomy": "%",
     "percentage_capex_eu_taxonomy": "%",
     "percentage_opex_eu_taxonomy": "%",
+    "percentage_turnover_tobacco_activities": "%",
+    "percentage_turnover_hard_coal_and_lignite_activities": "%",
+    "percentage_turnover_oil_fuels_activities": "%",
+    "percentage_turnover_gaseous_fuels_activities": "%",
+    "percentage_turnover_high_ghg_intensity_electricity_generation": "%",
     "unadjusted_gender_pay_gap": "%",
     "percentage_employees_responding_employee_survey": "%",
     "number_of_data_breaches": "breaches",
@@ -956,21 +1155,8 @@ COMPOUND_ID_UNITS = {
     "total_scope_1_emissions": "tCO2e",
     "total_scope_2_emissions": "tCO2e",
     "total_scope_3_emissions": "tCO2e",
-    "scope_3_emissions_purchased_goods_and_services": "tCO2e",
-    "scope_3_emissions_capital_goods": "tCO2e",
-    "scope_3_emissions_fuel_and_energy_related_not_in_scopes_1_2": "tCO2e",
-    "scope_3_emissions_upstream_transportation_distribution": "tCO2e",
-    "scope_3_emissions_waste_generated_in_operations": "tCO2e",
-    "scope_3_emissions_business_travel": "tCO2e",
-    "scope_3_emissions_employee_commuting": "tCO2e",
-    "scope_3_emissions_upstream_leased_assets": "tCO2e",
-    "scope_3_emissions_downstream_transportation_distribution": "tCO2e",
-    "scope_3_emissions_processing_of_sold_products": "tCO2e",
-    "scope_3_emissions_use_of_sold_products": "tCO2e",
-    "scope_3_emissions_endoflife_treatment_of_sold_products": "tCO2e",
-    "scope_3_emissions_downstream_leased_assets": "tCO2e",
-    "scope_3_emissions_franchises": "tCO2e",
-    "scope_3_emissions_investments": "tCO2e",
+    "scope_3_primary_source_emissions": "tCO2e",
+    "scope_3_secondary_source_emissions": "tCO2e",
     "total_scope_2_emissions_location_based": "tCO2e",
     "total_scope_2_emissions_market_based": "tCO2e",
     "total_ghg_emissions_location_based": "tCO2e",
