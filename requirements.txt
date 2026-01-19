@@ -1,3 +1,5 @@
 flask
 cerberus
 gunicorn
+openpyxl
+uuid

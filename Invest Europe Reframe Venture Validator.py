@@ -1163,11 +1163,12 @@ def validate_metrics_by_fund(fund_data: dict, schema: dict):
                 
     # Special relationships validation
     special_relations = [
-        {
-            "condition_id": "good_governance_post_investment",
-            "condition_value": "yes",
-            "dependent_ids": ["good_governance_post_investment_frequency"]
-        },
+        # Removed in 2025/6
+        # {
+        #     "condition_id": "good_governance_post_investment",
+        #     "condition_value": "yes",
+        #     "dependent_ids": ["good_governance_post_investment_frequency"]
+        # },
         {
             "condition_id": "adhere_to_ungc",
             "condition_value": "no",
