@@ -676,7 +676,6 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
                 "compound_id": compound_id,
                 "raw_value": company_metrics[compound_id],
                 "error_notes": "Unknown compound ID",
-                
             })
 
     # Calculate valid metric percentages by level
