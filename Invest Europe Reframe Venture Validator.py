@@ -305,11 +305,12 @@ def validate_metrics_by_company(company_data: dict, schema: dict):
             "condition_value": "yes",
             "dependent_ids": ["percentage_turnover_high_ghg_intensity_electricity_generation"]
         },
-        {
-            "condition_id": "ems_implemented",
-            "condition_value": "yes_other_ems_certification",
-            "dependent_ids": ["other_ems_certification"]
-        },
+        # REMOVED in 2025 Update
+        # {
+        #     "condition_id": "ems_implemented",
+        #     "condition_value": "yes_other_ems_certification",
+        #     "dependent_ids": ["other_ems_certification"]
+        # },
         {
             "condition_id": "listed",
             "condition_value": "yes",
@@ -1608,11 +1609,12 @@ def validate_metrics_by_gp(gp_data: dict, schema: dict):
                 "participates_in_sustainability_climate_initiatives_other"
             ]
         },
-        {
-            "condition_id": "ems_implemented",
-            "condition_value": "yes_other_ems_certification",
-            "dependent_ids": ["other_ems_certification"]
-        },
+         # REMOVED in 2025 Update
+        # {
+        #     "condition_id": "ems_implemented",
+        #     "condition_value": "yes_other_ems_certification",
+        #     "dependent_ids": ["other_ems_certification"]
+        # },
         #NEW in 2025
         {
             "condition_id": "number_of_esg_incidents",
